@@ -1,0 +1,64 @@
+#!/bin/bash
+
+usage()
+{
+  echo
+  echo "Usage: hfavpn <option>"
+  echo
+  echo "Options:"
+  echo
+  echo "  connect     - Connect with HFAVPN"
+  echo "  disconnect  - Disconnect from HFAVPN"
+}
+
+connect()
+{
+
+  HOST=<your-vpn-host>
+  GROUP=<your-vpn-group>
+  USER=<your-vpn-username>
+  PASS=<your-vpn-password>
+  echo $PASS | \
+  sudo openconnect \
+    --user="$USER" \
+    --passwd-on-stdin \
+    --authgroup="$GROUP" \
+    "$HOST" &>/dev/null & export APP_PID=$!
+
+  echo $APP_PID > /tmp/hfavpn.pid
+
+  echo "Done."
+}
+
+try_connect()
+{
+  echo "Connecting..."
+
+  EXIST=`ps aux |grep openconnect |grep -v grep |wc -l`
+	if [ $EXIST -gt 0 ]
+	then
+    echo
+    echo "Error! HFAVPN already started. Nothing to do."
+    echo
+    exit
+  else
+    connect
+	fi
+}
+
+disconnect()
+{
+  echo "Disconnecting..."
+  FILE="/tmp/hfavpn.pid"
+  PID=`cat ${FILE}`
+  sudo kill ${PID}
+  rm $PID
+
+  echo "Done."
+}
+
+case $1 in
+connect)    try_connect ;;
+disconnect) disconnect ;;
+*) echo "Option ${1} is invalid!"; usage ;;
+esac
