@@ -25,7 +25,7 @@ connect()
     --authgroup="$GROUP" \
     "$HOST" &>/dev/null & export APP_PID=$!
 
-  echo $APP_PID > /tmp/hfavpn.pid
+  echo $APP_PID > /tmp/cisco-tool.pid
 
   echo "Done."
 }
@@ -38,7 +38,7 @@ try_connect()
 	if [ $EXIST -gt 0 ]
 	then
     echo
-    echo "Error! HFAVPN already started. Nothing to do."
+    echo "Error! Cisco VPN already started. Nothing to do."
     echo
     exit
   else
@@ -49,7 +49,7 @@ try_connect()
 disconnect()
 {
   echo "Disconnecting..."
-  FILE="/tmp/hfavpn.pid"
+  FILE="/tmp/cisco-tool.pid"
   PID=`cat ${FILE}`
   sudo kill ${PID}
   rm $PID
