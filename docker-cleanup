@@ -1,0 +1,48 @@
+#!/bin/bash
+
+clear
+#echo
+#echo WARNING: This will remove a lot of older stuffs from docker, like containers, images and volumes.
+#echo
+#read -p "Do you want proceed? (y/N) " option
+#
+#if [ -z $option ] || [ $option != "y" ]
+#then
+#  echo "Aborting".
+#  exit
+#fi
+
+echo "Removing containers..."
+containers=$(docker ps -a -q)
+if [[ ! -z $containers ]]
+then
+  docker rm $containers
+  echo "done."
+else
+  echo "Nothing to do."
+fi
+echo
+
+echo "Removing images..."
+images=$(docker images -f "dangling=true" -q)
+if [[ ! -z $images ]]
+then
+  docker rmi $images
+  echo "done."
+else
+  echo "Nothing to do."
+fi
+echo
+
+echo "Removing volumes..."
+volumes=$(docker volume ls -f 'dangling=true' -q)
+if [[ ! -z $volumes ]]
+then
+  docker volume rm $volumes
+  echo "done."
+else
+  echo "Nothing to do."
+fi
+echo
+
+echo "All done."
